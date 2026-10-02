@@ -1,0 +1,9 @@
+{
+  "name": "My Routine",
+  "short_name": "Routine",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#080a0f",
+  "theme_color": "#080a0f",
+  "description": "Personal real-time routine dashboard"
+}
