@@ -1,7 +1,179 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090b10"><link rel="manifest" href="manifest.json"><title>My Routine</title><style>
-:root{--bg:#080a0f;--card:#11151d;--card2:#181e28;--text:#f5f7fb;--muted:#929aaa;--line:#28303d;--a:#7c9cff;--g:#58d68d}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#171d29,#080a0f 48%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}.app{max-width:900px;margin:auto;padding:18px 14px 70px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.brand{font-size:28px;font-weight:800}.date,.muted{color:var(--muted);font-size:13px}.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:14px}.tab{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:9px 14px}.tab.active,.primary{background:var(--a);color:#07101d;font-weight:800}.hero,.event,.settings{background:var(--card);border:1px solid var(--line);border-radius:18px}.hero{padding:19px;margin-bottom:17px}.eyebrow{text-transform:uppercase;letter-spacing:1.3px;font-size:10px;color:var(--muted);font-weight:700}.hero h1{font-size:29px;margin:7px 0}.progress{height:7px;background:#272e39;border-radius:99px;overflow:hidden;margin:17px 0}.bar{height:100%;background:var(--a);width:0;transition:.3s}.split{display:grid;grid-template-columns:1fr 1fr;gap:9px}.mini{background:#ffffff06;border:1px solid #ffffff0b;border-radius:14px;padding:12px}.mini b{display:block;margin-top:5px}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:18px 0 9px}.sectionhead h2{font-size:17px;margin:0}.item{display:grid;grid-template-columns:68px 12px 1fr;gap:9px}.time{text-align:right;color:var(--muted);font-size:12px;padding-top:11px}.dotcol{position:relative;display:flex;justify-content:center}.dot{width:10px;height:10px;border-radius:50%;background:#667080;margin-top:14px;z-index:1}.dotcol:after{content:"";position:absolute;top:20px;bottom:0;width:1px;background:var(--line)}.item:last-child .dotcol:after{display:none}.event{padding:13px;margin-bottom:9px}.event.now{border-color:var(--a);box-shadow:0 0 0 1px #7c9cff30}.event.done{opacity:.52}.eventtop{display:flex;justify-content:space-between;gap:8px}.eventname{font-weight:750}.tag{font-size:10px;padding:4px 7px;border-radius:99px;background:#ffffff0a;color:var(--muted);white-space:nowrap}.eventmeta{font-size:12px;color:var(--muted);margin-top:5px}.actions{display:flex;gap:7px;margin-top:10px}.actions button,button{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:11px;padding:9px 11px;cursor:pointer}.primary{border:0}.settings{padding:14px;color:var(--muted);line-height:1.5}.settings button{margin:5px 5px 0 0}.danger{color:#ff8794}.overlay{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:5}.overlay.show{display:flex}.modal{width:min(600px,100%);background:#10141c;border:1px solid var(--line);border-radius:20px;padding:18px}.modal h2{margin:0 0 15px}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{font-size:12px;color:var(--muted)}input,select{width:100%;margin-top:6px;padding:11px;border-radius:11px;border:1px solid var(--line);background:#080b10;color:var(--text)}.full{grid-column:1/-1}.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}@media(max-width:560px){.split{grid-template-columns:1fr}.form{grid-template-columns:1fr}.full{grid-column:auto}.item{grid-template-columns:57px 10px 1fr}}
-</style></head><body><div class="app"><div class="top"><div><div class="brand">My Routine</div><div class="date" id="date"></div></div><button class="primary" onclick="openAdd()">＋ Activity</button></div><div class="tabs" id="tabs"></div><section class="hero"><div class="eyebrow">Right now</div><h1 id="now">Free time</h1><div class="muted" id="nowMeta">Nothing scheduled.</div><div class="progress"><div class="bar" id="bar"></div></div><div class="split"><div class="mini"><div class="eyebrow">Up next</div><b id="next">—</b><span class="muted" id="nextMeta"></span></div><div class="mini"><div class="eyebrow">Day progress</div><b id="pct">0%</b><span class="muted" id="count"></span></div></div></section><div class="sectionhead"><h2>Full day</h2><span class="muted" id="day"></span></div><div id="timeline"></div><div class="sectionhead"><h2>Routine controls</h2></div><div class="settings"><b>Move anything.</b> Edit an activity to change its start/end time. Changes are saved on this device.<br><button onclick="resetDay()">Reset this day</button><button class="danger" onclick="resetAll()">Reset everything</button></div></div><div class="overlay" id="overlay"><div class="modal"><h2 id="mtitle">Add activity</h2><div class="form"><div class="full"><label>Activity<input id="name" placeholder="e.g. DSA practice"></label></div><div><label>Start<input id="start" type="time"></label></div><div><label>End<input id="end" type="time"></label></div><div class="full"><label>Type<select id="type"><option>Academic</option><option>College</option><option>Gym</option><option>Football</option><option>Explosive Training</option><option>Web Development</option><option>Java / DSA</option><option>Meal</option><option>GF / Personal</option><option>Relax</option><option>Sleep</option><option>Other</option></select></label></div></div><div class="foot"><button onclick="closeM()">Cancel</button><button class="primary" onclick="saveA()">Save</button></div></div></div><script>
-const B={"Day 1":[["10:40","11:30","Professional Ethics","Academic"],["12:30","13:20","Transforms & Boundary Value Problems","Academic"],["13:25","14:15","Transforms & Boundary Value Problems","Academic"],["14:20","15:10","Operating Systems","Academic"],["15:10","16:00","Operating Systems","Academic"]],"Day 2":[["08:00","08:50","Data Structures & Algorithms","Academic"],["08:50","09:40","Data Structures & Algorithms","Academic"],["11:35","12:25","Transforms & Boundary Value Problems","Academic"],["15:10","16:00","Operating Systems","Academic"],["16:00","16:50","Operating Systems","Academic"]],"Day 3":[["12:30","13:20","Computer Organization & Architecture","Academic"],["13:25","14:15","Computer Organization & Architecture","Academic"],["14:20","15:10","Transforms & Boundary Value Problems","Academic"],["15:10","16:00","Advanced Programming Practice","Academic"],["16:00","16:50","Data Structures & Algorithms","Academic"]],"Day 4":[["08:00","08:50","Advanced Programming Practice","Academic"],["08:50","09:40","Advanced Programming Practice","Academic"],["09:45","10:35","Data Structures & Algorithms","Academic"],["11:35","12:25","Computer Organization & Architecture","Academic"]],"Day 5":[["09:45","10:35","Data Structures & Algorithms","Practical"],["10:40","11:30","Data Structures & Algorithms","Practical"],["14:20","15:10","Computer Organization & Architecture","Academic"],["15:10","16:00","Operating Systems","Academic"],["16:00","16:50","Advanced Programming Practice","Academic"]]};
-const E={"Day 1":[["07:00","07:30","Wake up + morning routine","Other"],["07:30","08:00","Breakfast","Meal"],["16:30","17:15","Decompress / snack","Relax"],["17:15","18:15","Gym / training","Gym"],["18:30","19:15","Dinner","Meal"],["19:15","20:45","GF / personal time","GF / Personal"],["20:45","22:00","DSA / Java","Java / DSA"],["22:00","23:00","Web development / project","Web Development"],["23:30","07:00","Sleep","Sleep"]],"Day 2":[["06:45","07:15","Wake up + breakfast","Meal"],["10:00","11:00","DSA practice","Java / DSA"],["12:30","13:15","Lunch","Meal"],["17:00","18:15","Gym / training","Gym"],["18:30","19:15","Dinner","Meal"],["19:15","20:45","GF / personal time","GF / Personal"],["20:45","22:00","Web development","Web Development"],["23:30","06:45","Sleep","Sleep"]],"Day 3":[["07:30","08:00","Wake up + breakfast","Meal"],["08:00","09:15","Web development","Web Development"],["09:15","10:15","DSA / Java","Java / DSA"],["10:15","11:15","Free / personal","Relax"],["17:15","18:15","Explosive training / football","Explosive Training"],["18:30","19:15","Dinner","Meal"],["19:15","20:45","GF / personal time","GF / Personal"],["20:45","22:00","Project work","Web Development"],["23:30","07:30","Sleep","Sleep"]],"Day 4":[["06:45","07:15","Wake up + breakfast","Meal"],["10:45","11:30","Break / snack","Relax"],["12:45","13:30","Lunch","Meal"],["13:30","14:30","DSA practice","Java / DSA"],["14:30","15:30","Web development","Web Development"],["17:15","18:15","Gym / training","Gym"],["18:30","19:15","Dinner","Meal"],["19:15","20:45","GF / personal time","GF / Personal"],["20:45","22:00","Project / revision","Academic"],["23:30","06:45","Sleep","Sleep"]],"Day 5":[["07:15","07:45","Wake up + breakfast","Meal"],["11:45","12:30","Lunch","Meal"],["12:30","13:30","Relax / reset","Relax"],["17:15","18:30","Football / explosive training","Football"],["18:45","19:30","Dinner","Meal"],["19:30","21:00","GF / personal time","GF / Personal"],["21:00","22:00","Weekly review / DSA","Java / DSA"],["22:00","23:15","Free time","Relax"],["23:30","07:15","Sleep","Sleep"]]};
-const days=["Day 1","Day 2","Day 3","Day 4","Day 5"],K="myRoutineV2";let d=JSON.parse(localStorage.getItem(K)||"null"),sel=(new Date().getDay()||5),edit=null;if(!d){d={};days.forEach(x=>d[x]=[...B[x],...E[x]].map(a=>({id:crypto.randomUUID(),start:a[0],end:a[1],name:a[2],type:a[3]})));localStorage.setItem(K,JSON.stringify(d))}sel="Day "+sel;function m(t){let[a,b]=t.split(":").map(Number);return a*60+b}function f(t){let[a,b]=t.split(":").map(Number),p=a>=12?"PM":"AM";a=a%12||12;return a+":"+String(b).padStart(2,"0")+" "+p}function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}function save(){localStorage.setItem(K,JSON.stringify(d))}function render(){tabs.innerHTML=days.map(x=>`<button class="tab ${x==sel?'active':''}" onclick="sel='${x}';render()">${x}</button>`).join("");let n=new Date(),cur=n.getHours()*60+n.getMinutes(),a=[...d[sel]].sort((x,y)=>m(x.start)-m(y.start)),c=a.find(x=>m(x.start)<=cur&&cur<m(x.end)),nx=a.find(x=>m(x.start)>cur);date.textContent=n.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"short"});day.textContent=sel;now.textContent=c?c.name:"Free time";nowMeta.textContent=c?`${f(c.start)} – ${f(c.end)} · ${c.type}`:"Nothing scheduled right now";bar.style.width=c?Math.min(100,(cur-m(c.start))/(m(c.end)-m(c.start))*100)+"%":"0%";next.textContent=nx?nx.name:"Nothing else scheduled";nextMeta.textContent=nx?`${f(nx.start)} – ${f(nx.end)}`:"";let done=a.filter(x=>m(x.end)<=cur).length;pct.textContent=(a.length?Math.round(done/a.length*100):0)+"%";count.textContent=`${done} of ${a.length} blocks passed`;timeline.innerHTML=a.length?a.map(x=>`<div class="item"><div class="time">${f(x.start)}<br>${f(x.end)}</div><div class="dotcol"><div class="dot"></div></div><div class="event ${c&&x.id==c.id?'now':''} ${m(x.end)<=cur?'done':''}"><div class="eventtop"><div class="eventname">${esc(x.name)}</div><span class="tag">${esc(x.type)}</span></div><div class="eventmeta">${duration(x.start,x.end)}</div><div class="actions"><button onclick="editA('${x.id}')">Edit / move</button><button onclick="delA('${x.id}')">Delete</button></div></div></div>`).join(""):"<div class='settings'>Nothing planned. Add an activity.</div>"}function duration(a,b){let x=m(b)-m(a);if(x<0)x+=1440;return x>=60?Math.floor(x/60)+"h "+(x%60?x%60+"m":""):x+" min"}function openAdd(){edit=null;mtitle.textContent="Add activity";name.value="";start.value="";end.value="";type.value="Other";overlay.classList.add("show")}function editA(id){let x=d[sel].find(y=>y.id==id);edit=id;mtitle.textContent="Move / edit activity";name.value=x.name;start.value=x.start;end.value=x.end;type.value=x.type;overlay.classList.add("show")}function closeM(){overlay.classList.remove("show")}function saveA(){if(!name.value||!start.value||!end.value)return alert("Enter activity, start and end time.");let x={id:edit||crypto.randomUUID(),name:name.value.trim(),start:start.value,end:end.value,type:type.value};d[sel]=edit?d[sel].map(y=>y.id==edit?x:y):[...d[sel],x];save();closeM();render()}function delA(id){if(confirm("Delete this activity?")){d[sel]=d[sel].filter(x=>x.id!=id);save();render()}}function resetDay(){if(confirm("Reset this day?")){d[sel]=[...B[sel],...E[sel]].map(a=>({id:crypto.randomUUID(),start:a[0],end:a[1],name:a[2],type:a[3]}));save();render()}}function resetAll(){if(confirm("Reset entire routine?")){localStorage.removeItem(K);location.reload()}}render();setInterval(render,30000);
-</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<link rel="manifest" href="manifest.json">
+<title>My Routine</title>
+<style>
+:root{--bg:#080a0f;--card:#11151d;--card2:#181e28;--text:#f5f7fb;--muted:#929aaa;--line:#28303d;--a:#7c9cff;--g:#58d68d;--r:#ff6b7a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#171d29,#080a0f 48%);color:var(--text);font:15px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.app{max-width:900px;margin:auto;padding:18px 14px 70px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.brand{font-size:28px;font-weight:800}.date{font-size:13px;color:var(--muted);margin-top:3px}button,input,select{font:inherit}button{border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer}.primary{background:var(--a);border-color:transparent;color:#07101e;font-weight:800}.tabs{display:flex;gap:7px;overflow:auto;padding-bottom:5px;margin-bottom:14px}.tab{min-width:82px;line-height:1.15}.tab small{font-size:10px;color:var(--muted)}.tab.active{background:var(--a);color:#07101e;font-weight:800}.tab.active small{color:#07101e}.hero{background:linear-gradient(145deg,#171d29,#0e1219);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px}.eyebrow{text-transform:uppercase;letter-spacing:1.4px;font-size:10px;color:var(--muted);font-weight:800}.hero h1{font-size:29px;line-height:1.05;margin:7px 0}.hero p{margin:0;color:var(--muted)}.progress{height:7px;background:#252b36;border-radius:99px;overflow:hidden;margin:17px 0 10px}.bar{height:100%;background:var(--a);width:0;transition:.25s}.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mini{background:#ffffff07;border:1px solid #ffffff0b;border-radius:15px;padding:12px}.mini b{display:block;margin-top:5px}.section{margin-top:18px}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.sectionhead h2{font-size:17px;margin:0}.muted{color:var(--muted)}.timeline{position:relative}.item{display:grid;grid-template-columns:72px 12px 1fr;gap:9px;min-height:78px}.time{font-size:11px;color:var(--muted);padding-top:11px;text-align:right}.dotcol{display:flex;justify-content:center;position:relative}.dot{width:10px;height:10px;border-radius:50%;background:#667080;margin-top:14px;z-index:2}.dotcol:after{content:"";position:absolute;top:21px;bottom:0;width:1px;background:var(--line)}.item:last-child .dotcol:after{display:none}.event{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:9px}.event.now{border-color:var(--a);box-shadow:0 0 0 1px #7c9cff33}.event.passed{opacity:.55}.eventtop{display:flex;justify-content:space-between;gap:8px}.eventname{font-weight:750}.tag{font-size:10px;color:var(--muted);background:#ffffff0a;border-radius:99px;padding:4px 7px;white-space:nowrap}.eventmeta{font-size:12px;color:var(--muted);margin-top:5px}.actions{display:flex;gap:7px;margin-top:10px}.actions button{font-size:12px;padding:7px 9px}.empty{border:1px dashed var(--line);padding:24px;border-radius:16px;text-align:center;color:var(--muted)}.settings{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:15px}.settings p{font-size:13px;color:var(--muted);line-height:1.5}.danger{color:#ff8c97}.overlay{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:10}.overlay.show{display:flex}.modal{width:min(600px,100%);background:#10141c;border:1px solid var(--line);border-radius:22px;padding:18px}.form{display:grid;grid-template-columns:1fr 1fr;gap:11px}.full{grid-column:1/-1}label{font-size:12px;color:var(--muted)}input,select{width:100%;margin-top:6px;background:#080b10;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px}.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}@media(max-width:560px){.split{grid-template-columns:1fr}.form{grid-template-columns:1fr}.full{grid-column:auto}.item{grid-template-columns:60px 10px 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div><div class="brand">My Routine</div><div class="date" id="date"></div></div>
+    <button class="primary" onclick="openAdd()">＋ Activity</button>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <section class="hero">
+    <div class="eyebrow">Right now</div>
+    <h1 id="now">Free time</h1>
+    <p id="nowMeta">Nothing scheduled right now.</p>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="split">
+      <div class="mini"><div class="eyebrow">Up next</div><b id="next">—</b><span class="muted" id="nextMeta"></span></div>
+      <div class="mini"><div class="eyebrow">Day progress</div><b id="pct">0%</b><span class="muted" id="count"></span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sectionhead"><h2>Full day</h2><span class="muted" id="dayTitle"></span></div>
+    <div id="timeline" class="timeline"></div>
+  </section>
+
+  <section class="section">
+    <div class="sectionhead"><h2>Routine controls</h2></div>
+    <div class="settings">
+      <p><b>Week sync:</b> Monday = Day 5, Tuesday = Day 1, Wednesday = Day 2, Thursday = Day 3, Friday = Day 4. Saturday and Sunday are weekend days. You can edit, move, add, or delete anything.</p>
+      <button onclick="resetSelected()">Reset selected day</button>
+      <button class="danger" onclick="resetAll()">Reset entire routine</button>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="overlay">
+ <div class="modal">
+  <h2 id="modalTitle">Add activity</h2>
+  <div class="form">
+   <div class="full"><label>Activity<input id="nameInput" placeholder="e.g. DSA practice"></label></div>
+   <div><label>Start<input id="startInput" type="time"></label></div>
+   <div><label>End<input id="endInput" type="time"></label></div>
+   <div class="full"><label>Type<select id="typeInput">
+    <option>Academic</option><option>College</option><option>Gym</option><option>Football</option><option>Explosive Training</option><option>Web Development</option><option>Java / DSA</option><option>Meal</option><option>GF / Personal</option><option>Relax</option><option>Sleep</option><option>Other</option>
+   </select></label></div>
+  </div>
+  <div class="modalfoot"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveActivity()">Save</button></div>
+ </div>
+</div>
+
+<script>
+const BASE={
+"Day 1":[["10:40","11:30","Professional Ethics","Academic"],["12:30","13:20","Transforms & Boundary Value Problems","Academic"],["13:25","14:15","Transforms & Boundary Value Problems","Academic"],["14:20","15:10","Operating Systems","Academic"],["15:10","16:00","Operating Systems","Academic"]],
+"Day 2":[["08:00","08:50","Data Structures & Algorithms","Academic"],["08:50","09:40","Data Structures & Algorithms","Academic"],["11:35","12:25","Transforms & Boundary Value Problems","Academic"],["15:10","16:00","Operating Systems","Academic"],["16:00","16:50","Operating Systems","Academic"]],
+"Day 3":[["12:30","13:20","Computer Organization & Architecture","Academic"],["13:25","14:15","Computer Organization & Architecture","Academic"],["14:20","15:10","Transforms & Boundary Value Problems","Academic"],["15:10","16:00","Advanced Programming Practice","Academic"],["16:00","16:50","Data Structures & Algorithms","Academic"]],
+"Day 4":[["08:00","08:50","Advanced Programming Practice","Academic"],["08:50","09:40","Advanced Programming Practice","Academic"],["09:45","10:35","Data Structures & Algorithms","Academic"],["11:35","12:25","Computer Organization & Architecture","Academic"]],
+"Day 5":[["09:45","10:35","Data Structures & Algorithms","Practical"],["10:40","11:30","Data Structures & Algorithms","Practical"],["14:20","15:10","Computer Organization & Architecture","Academic"],["15:10","16:00","Operating Systems","Academic"],["16:00","16:50","Advanced Programming Practice","Academic"]]
+};
+const EXTRA={
+"Day 1":[["07:00","07:30","Wake up + morning routine","Other"],["07:30","08:00","Breakfast","Meal"],["16:30","17:15","Decompress / snack","Relax"],["17:15","18:15","Gym / training","Gym"],["18:30","19:30","Dinner","Meal"],["19:30","21:00","GF / personal time","GF / Personal"],["21:00","22:15","DSA / Java","Java / DSA"],["22:15","23:15","Web development / project","Web Development"],["23:30","07:00","Sleep","Sleep"]],
+"Day 2":[["06:45","07:15","Wake up + breakfast","Meal"],["10:00","11:00","DSA practice","Java / DSA"],["12:30","13:15","Lunch","Meal"],["17:00","18:15","Gym / training","Gym"],["18:30","19:30","Dinner","Meal"],["19:30","21:00","GF / personal time","GF / Personal"],["21:00","22:15","Web development","Web Development"],["23:30","06:45","Sleep","Sleep"]],
+"Day 3":[["07:30","08:00","Wake up + breakfast","Meal"],["08:00","09:15","Web development","Web Development"],["09:15","10:15","DSA / Java","Java / DSA"],["10:15","11:15","Free / personal","Relax"],["17:15","18:15","Explosive training / football","Explosive Training"],["18:30","19:30","Dinner","Meal"],["19:30","21:00","GF / personal time","GF / Personal"],["21:00","22:15","Project work","Web Development"],["23:30","07:30","Sleep","Sleep"]],
+"Day 4":[["06:45","07:15","Wake up + breakfast","Meal"],["10:45","11:30","Break / snack","Relax"],["12:45","13:30","Lunch","Meal"],["13:30","14:30","DSA practice","Java / DSA"],["14:30","15:30","Web development","Web Development"],["17:15","18:15","Gym / training","Gym"],["18:30","19:30","Dinner","Meal"],["19:30","21:00","GF / personal time","GF / Personal"],["21:00","22:15","Project / revision","Academic"],["23:30","06:45","Sleep","Sleep"]],
+"Day 5":[["07:15","07:45","Wake up + breakfast","Meal"],["11:45","12:30","Lunch","Meal"],["12:30","13:30","Relax / reset","Relax"],["17:15","18:30","Football / explosive training","Football"],["18:45","19:30","Dinner","Meal"],["19:30","21:00","GF / personal time","GF / Personal"],["21:00","22:00","Weekly review / DSA","Java / DSA"],["22:00","23:15","Free time","Relax"],["23:30","07:15","Sleep","Sleep"]]
+};
+const WEEKEND={
+Saturday:[["08:00","08:30","Wake up + morning routine","Other"],["08:30","09:15","Breakfast","Meal"],["10:00","12:00","Web development / project","Web Development"],["12:00","13:00","Free time","Relax"],["13:00","14:00","Lunch","Meal"],["14:00","15:30","DSA / Java","Java / DSA"],["16:00","17:30","Football / explosive training","Football"],["18:00","19:00","Dinner","Meal"],["19:00","21:00","GF / personal time","GF / Personal"],["21:00","23:30","Free time","Relax"],["23:30","08:00","Sleep","Sleep"]],
+Sunday:[["08:00","08:30","Wake up + morning routine","Other"],["08:30","09:15","Breakfast","Meal"],["10:00","11:30","Weekly review + planning","Academic"],["11:30","13:00","Web development / project","Web Development"],["13:00","14:00","Lunch","Meal"],["14:00","15:30","DSA / Java","Java / DSA"],["16:00","17:00","Gym / light training","Gym"],["17:30","19:00","GF / personal time","GF / Personal"],["19:00","20:00","Dinner","Meal"],["20:00","21:30","Prepare for the week","Academic"],["21:30","23:30","Relax","Relax"],["23:30","08:00","Sleep","Sleep"]]
+};
+
+const WEEK=[
+ {key:"Monday",order:"Day 5"},
+ {key:"Tuesday",order:"Day 1"},
+ {key:"Wednesday",order:"Day 2"},
+ {key:"Thursday",order:"Day 3"},
+ {key:"Friday",order:"Day 4"},
+ {key:"Saturday",order:"Weekend"},
+ {key:"Sunday",order:"Weekend"}
+];
+const ORDER_TO_DAY={Monday:"Day 5",Tuesday:"Day 1",Wednesday:"Day 2",Thursday:"Day 3",Friday:"Day 4"};
+const STORE="myRoutineV3";
+
+function makeItems(a){return a.map(x=>({id:crypto.randomUUID(),start:x[0],end:x[1],name:x[2],type:x[3]}))}
+function todayKey(){return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()]}
+function m(t){let [h,mi]=t.split(":").map(Number);return h*60+mi}
+function clock(t){let [h,mi]=t.split(":").map(Number);let ap=h>=12?"PM":"AM";h=h%12||12;return `${h}:${String(mi).padStart(2,"0")} ${ap}`}
+function esc(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function duration(a,b){let d=m(b)-m(a);if(d<0)d+=1440;return d>=60?`${Math.floor(d/60)}h${d%60?" "+d%60+"m":""}`:`${d}m`}
+
+let data=JSON.parse(localStorage.getItem(STORE)||"null");
+if(!data){
+  const old=JSON.parse(localStorage.getItem("myRoutineV2")||"null");
+  data={};
+  if(old){
+    for(const [weekday,dayOrder] of Object.entries(ORDER_TO_DAY))
+      data[weekday]=(old[dayOrder]||[]).map(x=>({...x,id:x.id||crypto.randomUUID()}));
+  }
+  if(!data.Monday)data.Monday=makeItems([...BASE["Day 5"],...EXTRA["Day 5"]]);
+  if(!data.Tuesday)data.Tuesday=makeItems([...BASE["Day 1"],...EXTRA["Day 1"]]);
+  if(!data.Wednesday)data.Wednesday=makeItems([...BASE["Day 2"],...EXTRA["Day 2"]]);
+  if(!data.Thursday)data.Thursday=makeItems([...BASE["Day 3"],...EXTRA["Day 3"]]);
+  if(!data.Friday)data.Friday=makeItems([...BASE["Day 4"],...EXTRA["Day 4"]]);
+  data.Saturday=data.Saturday||makeItems(WEEKEND.Saturday);
+  data.Sunday=data.Sunday||makeItems(WEEKEND.Sunday);
+  localStorage.setItem(STORE,JSON.stringify(data));
+}
+let selected=todayKey(), editId=null;
+
+function save(){localStorage.setItem(STORE,JSON.stringify(data))}
+function renderTabs(){
+  tabs.innerHTML=WEEK.map(w=>`<button class="tab ${w.key===selected?"active":""}" onclick="selected='${w.key}';render()">${w.key}<br><small>${w.order}</small></button>`).join("");
+}
+function render(){
+  renderTabs();
+  const nowDate=new Date(), currentMin=nowDate.getHours()*60+nowDate.getMinutes();
+  date.textContent=nowDate.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"short",year:"numeric"});
+  const meta=WEEK.find(x=>x.key===selected);
+  dayTitle.textContent=`${selected} · ${meta.order}`;
+  let arr=[...(data[selected]||[])].sort((a,b)=>m(a.start)-m(b.start));
+  let current=arr.find(x=>m(x.start)<=currentMin && currentMin<m(x.end));
+  let next=arr.find(x=>m(x.start)>currentMin);
+  now.textContent=current?current.name:"Free time";
+  nowMeta.textContent=current?`${clock(current.start)} – ${clock(current.end)} · ${current.type}`:"Nothing scheduled right now.";
+  if(current){let p=Math.max(0,Math.min(100,(currentMin-m(current.start))/(m(current.end)-m(current.start))*100));bar.style.width=p+"%"}else bar.style.width="0%";
+  next.textContent=next?next.name:"Nothing else scheduled";
+  nextMeta.textContent=next?`${clock(next.start)} – ${clock(next.end)}`:"";
+  const passed=arr.filter(x=>m(x.end)<=currentMin).length;
+  pct.textContent=arr.length?Math.round(passed/arr.length*100)+"%":"0%";
+  count.textContent=`${passed} of ${arr.length} blocks passed`;
+  timeline.innerHTML=arr.length?arr.map(x=>{
+    const isNow=current&&x.id===current.id;
+    return `<div class="item"><div class="time">${clock(x.start)}<br>${clock(x.end)}</div><div class="dotcol"><div class="dot"></div></div><div class="event ${isNow?"now":""} ${m(x.end)<=currentMin?"passed":""}">
+      <div class="eventtop"><div class="eventname">${esc(x.name)}</div><span class="tag">${esc(x.type)}</span></div>
+      <div class="eventmeta">${duration(x.start,x.end)}</div>
+      <div class="actions"><button onclick="editActivity('${x.id}')">Edit / move</button><button onclick="removeActivity('${x.id}')">Delete</button></div>
+    </div></div>`;
+  }).join(""):`<div class="empty">Nothing planned. Add an activity.</div>`;
+}
+function openAdd(){
+  editId=null;modalTitle.textContent=`Add activity — ${selected}`;nameInput.value="";startInput.value="";endInput.value="";typeInput.value="Other";overlay.classList.add("show");
+}
+function editActivity(id){
+  const x=data[selected].find(a=>a.id===id);if(!x)return;
+  editId=id;modalTitle.textContent="Move / edit activity";nameInput.value=x.name;startInput.value=x.start;endInput.value=x.end;typeInput.value=x.type;overlay.classList.add("show");
+}
+function closeModal(){overlay.classList.remove("show")}
+function saveActivity(){
+  const name=nameInput.value.trim(),s=startInput.value,e=endInput.value;
+  if(!name||!s||!e)return alert("Enter an activity, start time and end time.");
+  const obj={id:editId||crypto.randomUUID(),start:s,end:e,name,type:typeInput.value};
+  if(m(e)===m(s))return alert("Start and end time cannot be the same.");
+  if(editId)data[selected]=data[selected].map(x=>x.id===editId?obj:x);else data[selected].push(obj);
+  data[selected].sort((a,b)=>m(a.start)-m(b.start));save();closeModal();render();
+}
+function removeActivity(id){if(confirm("Delete this activity?")){data[selected]=data[selected].filter(x=>x.id!==id);save();render()}}
+function resetSelected(){
+  if(!confirm(`Reset ${selected} to its default routine?`))return;
+  if(ORDER_TO_DAY[selected]){let d=ORDER_TO_DAY[selected];data[selected]=makeItems([...BASE[d],...EXTRA[d]])}
+  else data[selected]=makeItems(WEEKEND[selected]);
+  save();render();
+}
+function resetAll(){if(confirm("Reset the entire routine and remove your custom changes?")){localStorage.removeItem(STORE);localStorage.removeItem("myRoutineV2");location.reload()}}
+render();setInterval(render,30000);
+</script>
+</body>
+</html>
