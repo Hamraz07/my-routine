@@ -40,7 +40,7 @@
     <div class="sectionhead"><h2>Routine controls</h2></div>
     <div class="settings">
       <p><b>Week sync:</b> Monday = Day 5, Tuesday = Day 1, Wednesday = Day 2, Thursday = Day 3, Friday = Day 4. Saturday and Sunday are weekend days. The app automatically opens today's weekday. You can drag an activity onto another activity to swap its time slot, or use Edit / move for precise times.</p>
-      <button onclick="resetSelected()">Reset selected day</button>
+      <div id="mappingSettings"></div><button onclick="resetSelected()">Reset selected day</button>
       <button class="danger" onclick="resetAll()">Reset entire routine</button>
     </div>
   </section>
@@ -108,13 +108,13 @@ if(!data){
     for(const [weekday,dayOrder] of Object.entries(orderToWeekday()))
       data[weekday]=(old[dayOrder]||[]).map(x=>({...x,id:x.id||crypto.randomUUID()}));
   }
-  if(!data.Monday)data.Monday=makeItems([...BASE["Day 5"],...EXTRA["Day 5"]]);
-  if(!data.Tuesday)data.Tuesday=makeItems([...BASE["Day 1"],...EXTRA["Day 1"]]);
-  if(!data.Wednesday)data.Wednesday=makeItems([...BASE["Day 2"],...EXTRA["Day 2"]]);
-  if(!data.Thursday)data.Thursday=makeItems([...BASE["Day 3"],...EXTRA["Day 3"]]);
-  if(!data.Friday)data.Friday=makeItems([...BASE["Day 4"],...EXTRA["Day 4"]]);
-  data.Saturday=data.Saturday||makeItems(WEEKEND.Saturday);
-  data.Sunday=data.Sunday||makeItems(WEEKEND.Sunday);
+  if(!Array.isArray(data.Monday)||data.Monday.length===0)data.Monday=makeItems([...BASE["Day 5"],...EXTRA["Day 5"]]);
+  if(!Array.isArray(data.Tuesday)||data.Tuesday.length===0)data.Tuesday=makeItems([...BASE["Day 1"],...EXTRA["Day 1"]]);
+  if(!Array.isArray(data.Wednesday)||data.Wednesday.length===0)data.Wednesday=makeItems([...BASE["Day 2"],...EXTRA["Day 2"]]);
+  if(!Array.isArray(data.Thursday)||data.Thursday.length===0)data.Thursday=makeItems([...BASE["Day 3"],...EXTRA["Day 3"]]);
+  if(!Array.isArray(data.Friday)||data.Friday.length===0)data.Friday=makeItems([...BASE["Day 4"],...EXTRA["Day 4"]]);
+  data.Saturday=Array.isArray(data.Saturday)&&data.Saturday.length?data.Saturday:makeItems(WEEKEND.Saturday);
+  data.Sunday=Array.isArray(data.Sunday)&&data.Sunday.length?data.Sunday:makeItems(WEEKEND.Sunday);
   localStorage.setItem(STORE,JSON.stringify(data));
 }
 let selected=todayKey(), editId=null;
@@ -165,19 +165,19 @@ function render(){
   const meta=weekMeta().find(x=>x.key===selected);
   dayTitle.textContent=`${selected} · ${meta.order}`;
   let arr=[...(data[selected]||[])].sort((a,b)=>m(a.start)-m(b.start));
-  let current=arr.find(x=>m(x.start)<=currentMin && currentMin<m(x.end));
+  let current=arr.find(x=>{const s=m(x.start),e=m(x.end);return e>s?(s<=currentMin&&currentMin<e):(currentMin>=s||currentMin<e);});
   let next=arr.find(x=>m(x.start)>currentMin);
   now.textContent=current?current.name:"Free time";
   nowMeta.textContent=current?`${clock(current.start)} – ${clock(current.end)} · ${current.type}`:"Nothing scheduled right now.";
   if(current){let p=Math.max(0,Math.min(100,(currentMin-m(current.start))/(m(current.end)-m(current.start))*100));bar.style.width=p+"%"}else bar.style.width="0%";
   next.textContent=next?next.name:"Nothing else scheduled";
   nextMeta.textContent=next?`${clock(next.start)} – ${clock(next.end)}`:"";
-  const passed=arr.filter(x=>m(x.end)<=currentMin).length;
+  const passed=arr.filter(x=>m(x.end)>m(x.start)&&m(x.end)<=currentMin).length;
   pct.textContent=arr.length?Math.round(passed/arr.length*100)+"%":"0%";
   count.textContent=`${passed} of ${arr.length} blocks passed`;
   timeline.innerHTML=arr.length?arr.map(x=>{
     const isNow=current&&x.id===current.id;
-    return `<div class="item"><div class="time">${clock(x.start)}<br>${clock(x.end)}</div><div class="dotcol"><div class="dot"></div></div><div class="event ${isNow?"now":""} ${m(x.end)<=currentMin?"passed":""}" draggable="true" data-id="${x.id}" ondragstart="dragStart(event,'${x.id}')" ondragover="dragOver(event)" ondrop="dropActivity(event,'${x.id}')" ondragend="dragEnd(event)">
+    return `<div class="item"><div class="time">${clock(x.start)}<br>${clock(x.end)}</div><div class="dotcol"><div class="dot"></div></div><div class="event ${isNow?"now":""} ${(m(x.end)>m(x.start)&&m(x.end)<=currentMin)?"passed":""}" draggable="true" data-id="${x.id}" ondragstart="dragStart(event,'${x.id}')" ondragover="dragOver(event)" ondrop="dropActivity(event,'${x.id}')" ondragend="dragEnd(event)">
       <div class="eventtop"><div class="eventname">${esc(x.name)}</div><span class="tag">${esc(x.type)}</span></div>
       <div class="eventmeta">${duration(x.start,x.end)}</div><div class="draghint">↕ Drag onto another activity to move its time slot</div>
       <div class="actions"><button onclick="editActivity('${x.id}')">Edit / move</button><button onclick="removeActivity('${x.id}')">Delete</button></div>
